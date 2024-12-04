@@ -1,4 +1,4 @@
-# **Background Job Runner for Laravel** (show as code)
+# **Background Job Runner for Laravel** 
 
 This project implements a background job execution system in Laravel without relying on external services like Redis or RabbitMQ. Jobs are stored in the database and processed using scheduled Artisan commands. It includes a web dashboard to manage and monitor jobs, supports execution delays, and task prioritization.
 
@@ -312,8 +312,8 @@ Logs
     Job Error Logs: If an error occurs while processing a job, it is logged in storage/logs/background_jobs_errors.log.
 
 
-    
--------------------------------------------
-
+Conclusions
+This system provides a simple and effective solution to handle background tasks in Laravel applications without relying on external services.
+By following the instructions and considerations provided, you can implement and adapt this system according to the needs of your project.
 
 -------------------------------------------
