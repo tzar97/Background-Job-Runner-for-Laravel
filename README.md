@@ -1,4 +1,4 @@
-!!Background Job Runner for Laravel!!
+!!Background Job Runner for Laravel!!  (mostrar como código)
 
 This project implements a system for executing background tasks in Laravel without relying on external services like Redis or RabbitMQ. Tasks are stored in the database and processed using scheduled Artisan commands. It includes a web panel to manage and monitor jobs and supports advanced features like execution delays and task prioritization.
 
