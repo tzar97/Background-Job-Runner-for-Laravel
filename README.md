@@ -1,102 +1,137 @@
-!! Background Job Runner for Laravel !!
+!!Background Job Runner for Laravel!!
 
+This project implements a system for executing background tasks in Laravel without relying on external services like Redis or RabbitMQ. Tasks are stored in the database and processed using scheduled Artisan commands. It includes a web panel to manage and monitor jobs and supports advanced features like execution delays and task prioritization.
 
-Este proyecto es una implementación de un sistema de ejecución de tareas en segundo plano en Laravel sin depender de servicios externos como Redis o RabbitMQ. Las tareas se almacenan en la base de datos y se procesan mediante comandos Artisan programados, incluye un panel web para administrar y monitorear los trabajos. Además, soporta funcionalidades avanzadas como retrasos en la ejecución y priorización de tareas.
-
-git clone https://github.com/tu-usuario/BackgroundJobRunnerforLaravel.git
+git clone https://github.com/tzar97/Background-Job-Runner-for-Laravel.git
 cd BackgroundJobRunnerforLaravel
 
+-------------------------------------------
+install dependencies
+composer install
+npm install
+-------------------------------------------
 
-------------------------------------------
-.env:
-env
-Copiar código
+env Configuration
+Update your .env file with the following database configuration:
+
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=nombre_de_tu_base_de_datos
-DB_USERNAME=tu_usuario
-DB_PASSWORD=tu_contraseña
+DB_DATABASE=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+
 -------------------------------------------
+execute migrations
 
-Puedes crear trabajos en segundo plano desde rutas o controladores. Por ejemplo, en routes/web.php:
+php artisan migrate
 
-Route::get('/crear-trabajo', function () {
+-------------------------------------------
+Creating Background Jobs
+You can create background jobs from routes or controllers. For example, in routes/web.php:
+
+Route::get('/create-job', function () {
     runBackgroundJob(
         \App\Jobs\ExampleJob::class,
         'handle',
-        ['message' => 'Hola Mundo'],
-        3,  // Intentos máximos
-        5,  // Prioridad
-        0   // Retraso en segundos
+        ['message' => 'Hello World'],
+        3,  // Maximum attempts
+        5,  // Priority
+        0   // Delay in seconds
     );
 
-    return "Trabajo en segundo plano iniciado.";
+    return "Background job started.";
 });
 
 -------------------------------------------
-Visita http://127.0.0.1:8000/crear-trabajo para crear el trabajo.
+Visit http://127.0.0.1:8000/create-job to create the job.
 -------------------------------------------
-
-Puedes llamar a runBackgroundJob desde cualquier parte de tu aplicación:
+You can call runBackgroundJob from anywhere in your application:
 
 runBackgroundJob(
     \App\Jobs\ExampleJob::class,
     'handle',
-    ['message' => 'Mensaje con retraso'],
+    ['message' => 'Delayed message'],
     3,
     5,
-    60  // Retraso de 60 segundos
+    60  // 60-second delay
 );
 
 -------------------------------------------
-Modelo BackgroundJob
-Ubicado en app/Models/BackgroundJob.php, representa los trabajos en la base de datos.
+manual execution for pending task proccess
+php artisan background-jobs:process
+-------------------------------------------
 
-Estructura de la Tabla:
+Schedule Automatic Processing
+Set the Laravel scheduler to run the command every minute.
 
-Campos Principales:
-class: Clase del trabajo.
-method: Método a ejecutar.
-params: Parámetros en formato JSON.
-status: Estado del trabajo (pending, running, completed, failed, cancelled).
-attempts: Número de intentos realizados.
-max_attempts: Máximo de intentos permitidos.
-priority: Prioridad del trabajo.
-available_at: Marca de tiempo para retrasos.
+In app/Console/Kernel.php:
+
+protected function schedule(Schedule $schedule)
+{
+    $schedule->command('background-jobs:process')->everyMinute();
+}
 
 -------------------------------------------
-Función runBackgroundJob
-Definida en app/helpers.php (o donde prefieras), esta función registra un trabajo en la base de datos:
+dashboard admin
+
+http://127.0.0.1:8000/admin/background-jobs
+-------------------------------------------
+
+implementation details
+BackgroundJob Model
+Located at app/Models/BackgroundJob.php, this model represents the jobs in the database.
+
+Table Structure:
+
+Main Fields:
+
+class: Job class.
+method: Method to execute.
+params: Parameters in JSON format.
+status: Job status (pending, running, completed, failed, cancelled).
+attempts: Number of attempts made.
+max_attempts: Maximum allowed attempts.
+priority: Job priority.
+available_at: Timestamp for delays.
+
+-------------------------------------------
+
+runBackgroundJob Function
+Defined in app/helpers.php (or wherever you prefer), this function registers a job in the database:
 
 function runBackgroundJob($class, $method, $params = [], $max_attempts = 1, $priority = 0, $delay = 0)
-{}
+{
+    // Function implementation
+}
+
 
 -------------------------------------------
 
-Comando background-jobs:process
-Ubicado en app/Console/Commands/ProcessBackgroundJobs.php, este comando procesa los trabajos pendientes:
+background-jobs:process Command
+Located at app/Console/Commands/ProcessBackgroundJobs.php, this command processes pending jobs:
 
-Manejo de Prioridad y Retrasos: Ordena los trabajos por prioridad y verifica available_at.
-Manejo de Errores y Reintentos: Registra errores y controla los reintentos hasta max_attempts.
-
--------------------------------------------
-
-Rutas y Controladores
-Rutas Definidas en routes/web.php:
-
-/crear-trabajo: Crea un trabajo de ejemplo.
-/ejecutar-tareas: Crea múltiples trabajos de manera controlada.
-/admin/background-jobs: Panel de administración.
+Handling Priority and Delays: Sorts jobs by priority and checks available_at.
+Error Handling and Retries: Logs errors and controls retries up to max_attempts.
 
 -------------------------------------------
 
-Controlador BackgroundJobController:
+Routes and Controllers
+Routes Defined in routes/web.php:
 
-Maneja las vistas del panel y acciones como cancelar trabajos.
+/create-job: Creates an example job.
+/execute-tasks: Creates multiple jobs in a controlled manner.
+/admin/background-jobs: Administration panel.
+
+-------------------------------------------
+
+BackgroundJobController
+Handles the panel views and actions like cancelling jobs.
 
 -------------------------------------------
 
 
+-------------------------------------------
 
 
+-------------------------------------------
